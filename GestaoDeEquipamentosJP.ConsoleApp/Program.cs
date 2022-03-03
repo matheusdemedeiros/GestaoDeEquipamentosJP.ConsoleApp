@@ -7,20 +7,20 @@ namespace GestaodeEquipamentosJP.ConsoleApp
     {
         #region Declaração de variáveis globais
         //Variáveis relacionadas aos equipamentos
-        static string[] nomesDosEquipamentos = new string[10];
-        static decimal[] precosDeAquisicaoDosEquipamentos = new decimal[10];
-        static int[] numerosDeSerieDosEquipamentos = new int[10];
-        static DateTime[] datasDeFabricacaoDosEquipamentos = new DateTime[10];
-        static string[] fabricantesDosEquipamentos = new string[10];
-        static int[] idsDosEquipamentos = new int[10];
-        static bool[] temChamado = new bool[10];
+        static string[] nomesDosEquipamentos = new string[1000];
+        static decimal[] precosDeAquisicaoDosEquipamentos = new decimal[1000];
+        static int[] numerosDeSerieDosEquipamentos = new int[1000];
+        static DateTime[] datasDeFabricacaoDosEquipamentos = new DateTime[1000];
+        static string[] fabricantesDosEquipamentos = new string[1000];
+        static int[] idsDosEquipamentos = new int[1000];
+        static bool[] temChamado = new bool[1000];
         //Variáveis relacionadas aos chamados
-        static int[] idsDosChamados = new int[10];
-        static string[] titulosDosChamados = new string[10];
-        static string[] descricaoDosChamados = new string[10];
-        static DateTime[] datasDeAberturaDosChamados = new DateTime[10];
-        static int[] posicaoDoEquipamentoNoArrayDeChamado = new int[10];
-        static int[] idsDosEquipamentosDentroDosChamados = new int[10];
+        static int[] idsDosChamados = new int[1000];
+        static string[] titulosDosChamados = new string[1000];
+        static string[] descricaoDosChamados = new string[1000];
+        static DateTime[] datasDeAberturaDosChamados = new DateTime[1000];
+        static int[] posicaoDoEquipamentoNoArrayDeChamado = new int[1000];
+        static int[] idsDosEquipamentosDentroDosChamados = new int[1000];
         //Variáveis de fluxo do programa
         static bool programaContinuaExecutando = true;
         #endregion
@@ -520,7 +520,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             }
             return posicaoAhRetornar;
         }
-
+        
         static void VisualizarUmEquipamento(int posicao)
         {
             Console.WriteLine("\nId do equipamento: {0}", idsDosEquipamentos[posicao]);
