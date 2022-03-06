@@ -21,12 +21,14 @@ namespace GestaodeEquipamentosJP.ConsoleApp
         static DateTime[] datasDeAberturaDosChamados = new DateTime[1000];
         static int[] posicaoDoEquipamentoNoArrayDeChamado = new int[1000];
         static int[] idsDosEquipamentosDentroDosChamados = new int[1000];
+        static int[] idsDosSolicitantesDentroDosChamados = new int[1000];
         //Variáveis relacionadas aos solictates
         static int[] idsDosSolicitantes = new int[1000];
         static string[] nomesDosSolicitantes = new string[1000];
         static string[] emailDosSolicitantes = new string[1000];
         static string[] telefoneDosSolicitantes = new string[1000];
         static bool[] solicitanteTemChamado = new bool[1000];
+
         //Variáveis de fluxo do programa
         static bool programaContinuaExecutando = true;
 
@@ -157,8 +159,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                 Console.Clear();
                 ApresentarMensagem("OLÁ!! SEJA BEM VINDO AO SISTEMA DE GESTÃO DE EQUIPAMENTOS AP-2022", ConsoleColor.White);
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("-----------------------------------------------------------------------------------------------\n");
-                Console.WriteLine("\t\tMENU PRINCIPAL");
+                Console.WriteLine("\n\t\tMENU PRINCIPAL");
                 Console.WriteLine("\n * Digite 1 para Gerenciar os equipamentos;");
                 Console.WriteLine("\n * Digite 2 para Gerenciar os chamados;");
                 Console.WriteLine("\n * Digite 3 para Gerenciar os solicitantes; ");
@@ -187,8 +188,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             {
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("-----------------------------------------------------------------------------------------------\n");
-                Console.WriteLine("\t\tMENU GERENCIAR SOLICITANTES");
+                Console.WriteLine("\n\t\tMENU GERENCIAR SOLICITANTES");
                 Console.WriteLine("\n * Digite 1 para Registrar um novo solicitante;");
                 Console.WriteLine("\n * Digite 2 para Editar um solicitante;");
                 Console.WriteLine("\n * Digite 3 para Excluir um solicitante; ");
@@ -207,7 +207,6 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                     ApresentarMensagem("OPÇÃO INVÁLIDA!! DIGITE UM NÚMERO DE 0 A 4!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
                     Console.ReadLine();
                 }
-                Console.WriteLine("\n-----------------------------------------------------------------------------------------------\n");
             } while (opcaoValida == false);
             Console.ResetColor();
         }
@@ -219,7 +218,6 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             {
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("-----------------------------------------------------------------------------------------------\n");
                 Console.WriteLine("\t\tMENU GERENCIAR CHAMADOS");
                 Console.WriteLine("\n * Digite 1 para Registrar um novo chamado;");
                 Console.WriteLine("\n * Digite 2 para Editar um chamado;");
@@ -552,8 +550,6 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             Console.WriteLine("\nData de fabricação do equipamento: {0}", TransformarDateTimeEmString(datasDeFabricacaoDosEquipamentos[posicao]));
             Console.WriteLine("\nFabricante do equipamento: {0}", fabricantesDosEquipamentos[posicao]);
             Console.WriteLine("\nO equipamento tem chamado? {0}", equipamentoTemChamado[posicao]);
-            Console.WriteLine();
-            Console.WriteLine("-----------------------------------------------------------------------------------------------\n");
         }
 
         static void VisualizarTodosOsEquipamentos()
@@ -562,10 +558,11 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             int posicaoLivre = RetornaAhPosicaoLivreDoArrayDeEquipamentos();
             if (posicaoLivre != 0)
             {
-                Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine("\t\tVISUALIZAR TODOS OS EQUIPAMENTOS REGISTRADOS NO SISTEMA\n");
                 for (int i = 0; i < posicaoLivre; i++)
                 {
+                    //if ternário escolhendo uma cor se for par e uma cor se for ímpar
+                    Console.ForegroundColor = (i % 2 == 0) ? ConsoleColor.DarkCyan : ConsoleColor.DarkYellow;
                     VisualizarUmEquipamento(i);
                 }
                 Console.ResetColor();
@@ -694,13 +691,15 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             {
                 for (int i = 0; i < posicaoLivre; i++)
                 {
+                    //if ternário escolhendo uma cor se for par e uma cor se for ímpar
+                    Console.ForegroundColor = (i % 2 == 0) ? ConsoleColor.DarkCyan : ConsoleColor.DarkYellow;
                     VisualizarUmChamado(i);
                 }
+                Console.ResetColor();
             }
             else
             {
                 ApresentarMensagem("O SISTEMA NÃO POSSUI CHAMADOS REGISTRADOS!!", ConsoleColor.Red);
-                Console.ReadLine();
             }
             Console.WriteLine("\n\nTECLE ENTER PARA CONTINUARMOS");
             Console.ReadLine();
@@ -738,6 +737,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                                 datasDeAberturaDosChamados = DeletarUmElementoDeUmArrayDeDateTime(datasDeAberturaDosChamados, idDoChamado);
                                 equipamentoTemChamado[RetornaAhPosicaoDoEquipamentoPeloId(idsDosEquipamentosDentroDosChamados[idDoChamado])] = false;
                                 idsDosEquipamentosDentroDosChamados = DeletarUmElementoDeUmArrayDeInteiros(idsDosEquipamentosDentroDosChamados, idDoChamado);
+                                idsDosSolicitantesDentroDosChamados = DeletarUmElementoDeUmArrayDeInteiros(idsDosSolicitantesDentroDosChamados, idDoChamado);
                                 ApresentarMensagem("O CHAMADO FOI EXCLUÍDO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
                                 Console.ReadLine();
                             }
@@ -871,7 +871,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             bool tituloValido = false, descricaoValida = false, dataAberturaValida = false, idDoEquipamentoValido = false, idDoSolicitanteValido = false, retorno = false;
             string tituloChamado = "", descricaoChamado = "", dataAbertura = "", idEquipamentoInput = "", idSolicitanteInput = "";
             DateTime dataAberturaDT = new DateTime(01, 01, 01);
-            int posicaoDoEquipamentoNoArrayDeEquipamentos = -1, posicaoDoSolicitanteNoArrayDeSolicitantes = -1, idDoEquipamentoDoUsuario = -1, idDoSolicitanteDoUsuario;
+            int posicaoDoEquipamentoNoArrayDeEquipamentos = -1, posicaoDoSolicitanteNoArrayDeSolicitantes = -1, idDoEquipamentoDoUsuario = -1, idDoSolicitanteDoUsuario = -1;
             do
             {
                 Console.Write("\nInforme o título do chamado: ");
@@ -924,7 +924,6 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                     if (int.TryParse(idEquipamentoInput, out idDoEquipamentoDoUsuario) == true)
                     {
                         posicaoDoEquipamentoNoArrayDeEquipamentos = RetornaAhPosicaoDoEquipamentoPeloId(idDoEquipamentoDoUsuario);
-                        idDoEquipamentoValido = true;
                         if (posicaoDoEquipamentoNoArrayDeEquipamentos != -1)
                         {
                             Console.WriteLine("\n\nESTE É O EQUIPAMENTO A SER INCLUSO NO CHAMADO:\n\n");
@@ -934,8 +933,15 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                             if (confirmacao == "S" || confirmacao == "s")
                             {
                                 equipamentoTemChamado[posicaoDoEquipamentoNoArrayDeEquipamentos] = true;
+                                idDoEquipamentoValido = true;
                                 ApresentarMensagem("EQUIPAMENTO INCLUSO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
                                 Console.ReadLine();
+                            }
+                            else
+                            {
+                                ApresentarMensagem("CHAMADO NÃO REGISTRADO, POIS NÃO HOUVE A INCLUSÃO DE UM EQUIPAMENTO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
+                                Console.ReadLine();
+                                return false;
                             }
                         }
                         else
@@ -971,6 +977,12 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                                 ApresentarMensagem("SOLICITANTE INCLUSO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
                                 Console.ReadLine();
                             }
+                            else
+                            {
+                                ApresentarMensagem("CHAMADO NÃO REGISTRADO, POIS NÃO HOUVE A INCLUSÃO DE UM SOLICITANTE!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
+                                Console.ReadLine();
+                                return false;
+                            }
                         }
                         else
                         {
@@ -995,6 +1007,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                 //Registrando o id sendo a posicao + 1
                 idsDosChamados[posicao] = posicao + 1;
                 idsDosEquipamentosDentroDosChamados[posicao] = idDoEquipamentoDoUsuario;
+                idsDosSolicitantesDentroDosChamados[posicao] = idDoSolicitanteDoUsuario;
                 if (tituloValido == descricaoValida && descricaoValida == dataAberturaValida && dataAberturaValida == idDoEquipamentoValido && idDoEquipamentoValido == true)
                 {
                     retorno = true;
@@ -1032,8 +1045,10 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             Console.WriteLine("\nDescrição do chamado: {0}", descricaoDosChamados[posicao]);
             Console.WriteLine("\nData de abertura do chamado: {0}", TransformarDateTimeEmString(datasDeAberturaDosChamados[posicao]));
             Console.WriteLine("\nQuantidade de dias que o chamado está aberto: {0}", RetornaAhQuantidadeDeDiasDaAberturaDeUmChamado(datasDeAberturaDosChamados[posicao]));
-            Console.WriteLine("\n\t\tEste é o equipamento do chamado");
+            Console.WriteLine("\n\t\t=== Este é o equipamento do chamado ===");
             VisualizarUmEquipamento(RetornaAhPosicaoDoEquipamentoPeloId(idsDosEquipamentosDentroDosChamados[posicao]));
+            Console.WriteLine("\n\t\t=== Este é o solicitante do chamado ===");
+            VisualizarUmSolicitante(RetornaAhPosicaoDoSolicitantePeloId(idsDosSolicitantesDentroDosChamados[posicao]));
             Console.WriteLine();
         }
 
@@ -1071,16 +1086,24 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                             idValido = true;
                             Console.WriteLine("\n\nESTE É O SOLICITANTE A SER EXCLUÍDO:\n\n");
                             VisualizarUmSolicitante(idDoSolicitante);
-                            Console.Write("\n\nCONFIRMA A EXCLUSÃO? (S/N): ");
-                            string confirmacao = Console.ReadLine();
-                            if (confirmacao == "S" || confirmacao == "s")
+                            if (equipamentoTemChamado[idDoSolicitante] == false)
                             {
-                                nomesDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(nomesDosSolicitantes, idDoSolicitante);
-                                emailDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(emailDosSolicitantes, idDoSolicitante);
-                                telefoneDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(telefoneDosSolicitantes, idDoSolicitante);
-                                idsDosSolicitantes = DeletarUmElementoDeUmArrayDeInteiros(idsDosSolicitantes, idDoSolicitante);
-                                solicitanteTemChamado = DeletarUmElementoDeUmArrayDeBooleanos(solicitanteTemChamado, idDoSolicitante);
-                                ApresentarMensagem("O SOLICITANTE FOI EXCLUÍDO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
+                                Console.Write("\n\nCONFIRMA A EXCLUSÃO? (S/N): ");
+                                string confirmacao = Console.ReadLine();
+                                if (confirmacao == "S" || confirmacao == "s")
+                                {
+                                    nomesDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(nomesDosSolicitantes, idDoSolicitante);
+                                    emailDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(emailDosSolicitantes, idDoSolicitante);
+                                    telefoneDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(telefoneDosSolicitantes, idDoSolicitante);
+                                    idsDosSolicitantes = DeletarUmElementoDeUmArrayDeInteiros(idsDosSolicitantes, idDoSolicitante);
+                                    solicitanteTemChamado = DeletarUmElementoDeUmArrayDeBooleanos(solicitanteTemChamado, idDoSolicitante);
+                                    ApresentarMensagem("O SOLICITANTE FOI EXCLUÍDO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
+                                    Console.ReadLine();
+                                }
+                            }
+                            else
+                            {
+                                ApresentarMensagem("NÃO FOI POSSÍVEL EXCLUIR O SOLICITANTE, POIS ELE ESTÁ VINCULADO A UM CHAMADO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
                                 Console.ReadLine();
                             }
                         }
@@ -1287,8 +1310,11 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             {
                 for (int i = 0; i < posicaoLivre; i++)
                 {
+                    //if ternário escolhendo uma cor se for par e uma cor se for ímpar
+                    Console.ForegroundColor = (i % 2 == 0) ? ConsoleColor.DarkCyan : ConsoleColor.DarkYellow;
                     VisualizarUmSolicitante(i);
                 }
+                Console.ResetColor();
             }
             else
             {
@@ -1304,9 +1330,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             Console.WriteLine("\nNome do solicitante: {0}", nomesDosSolicitantes[posicao]);
             Console.WriteLine("\nEmail do solicitante: {0}", emailDosSolicitantes[posicao]);
             Console.WriteLine("\nTelefone do solicitante: {0}", telefoneDosSolicitantes[posicao]);
-            Console.WriteLine("\nExiste algum chamado para este sokictante: {0}", solicitanteTemChamado[posicao]);
-            Console.WriteLine();
-            Console.WriteLine("-----------------------------------------------------------------------------------------------\n");
+            Console.WriteLine("\nExiste algum chamado para este solictante: {0}", solicitanteTemChamado[posicao]);
         }
 
         #endregion
