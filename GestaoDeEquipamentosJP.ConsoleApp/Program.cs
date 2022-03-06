@@ -7,13 +7,13 @@ namespace GestaodeEquipamentosJP.ConsoleApp
     {
         #region Declaração de variáveis globais
         //Variáveis relacionadas aos equipamentos
+        static int[] idsDosEquipamentos = new int[1000];
         static string[] nomesDosEquipamentos = new string[1000];
         static decimal[] precosDeAquisicaoDosEquipamentos = new decimal[1000];
         static int[] numerosDeSerieDosEquipamentos = new int[1000];
         static DateTime[] datasDeFabricacaoDosEquipamentos = new DateTime[1000];
         static string[] fabricantesDosEquipamentos = new string[1000];
-        static int[] idsDosEquipamentos = new int[1000];
-        static bool[] temChamado = new bool[1000];
+        static bool[] equipamentoTemChamado = new bool[1000];
         //Variáveis relacionadas aos chamados
         static int[] idsDosChamados = new int[1000];
         static string[] titulosDosChamados = new string[1000];
@@ -21,9 +21,17 @@ namespace GestaodeEquipamentosJP.ConsoleApp
         static DateTime[] datasDeAberturaDosChamados = new DateTime[1000];
         static int[] posicaoDoEquipamentoNoArrayDeChamado = new int[1000];
         static int[] idsDosEquipamentosDentroDosChamados = new int[1000];
+        //Variáveis relacionadas aos solictates
+        static int[] idsDosSolicitantes = new int[1000];
+        static string[] nomesDosSolicitantes = new string[1000];
+        static string[] emailDosSolicitantes = new string[1000];
+        static string[] telefoneDosSolicitantes = new string[1000];
+        static bool[] solicitanteTemChamado = new bool[1000];
         //Variáveis de fluxo do programa
         static bool programaContinuaExecutando = true;
+
         #endregion
+
         static void Main(string[] args)
         {
             while (programaContinuaExecutando == true)
@@ -61,20 +69,6 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             int ano = int.Parse(dataSeparada[2]);
             DateTime dataDeRetorno = new DateTime(ano, mes, dia);
             return dataDeRetorno;
-        }
-
-        static int RetornaAhPosicaoLivreDoArrayDeEquipamentos()
-        {
-            int posicaoLivre = -1;
-            for (int i = 0; i < nomesDosEquipamentos.Length; i++)
-            {
-                if (nomesDosEquipamentos[i] == null)
-                {
-                    posicaoLivre = i;
-                    break;
-                }
-            }
-            return posicaoLivre;
         }
 
         static string[] DeletarUmElementoDeUmArrayDeStrings(string[] arrayAhSerReduzido, int posicaoDeRemocao)
@@ -179,8 +173,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                 else
                 {
                     opcaoValida = false;
-                    ApresentarMensagem("OPÇÃO INVÁLIDA!! DIGITE UM NÚMERO DE 0 A 3!!", ConsoleColor.Red);
-                    Console.WriteLine("\n\nTECLE ENTER PARA CONTINUARMOS\n");
+                    ApresentarMensagem("OPÇÃO INVÁLIDA!! DIGITE UM NÚMERO DE 0 A 3!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
                     Console.ReadLine();
                 }
             } while (opcaoValida == false);
@@ -211,8 +204,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                 else
                 {
                     opcaoValida = false;
-                    ApresentarMensagem("OPÇÃO INVÁLIDA!! DIGITE UM NÚMERO DE 0 A 4!!", ConsoleColor.Red);
-                    Console.WriteLine("\n\nTECLE ENTER PARA CONTINUARMOS\n");
+                    ApresentarMensagem("OPÇÃO INVÁLIDA!! DIGITE UM NÚMERO DE 0 A 4!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
                     Console.ReadLine();
                 }
                 Console.WriteLine("\n-----------------------------------------------------------------------------------------------\n");
@@ -244,8 +236,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                 else
                 {
                     opcaoValida = false;
-                    ApresentarMensagem("OPÇÃO INVÁLIDA!! DIGITE UM NÚMERO DE 0 A 4!!", ConsoleColor.Red);
-                    Console.WriteLine("\n\nTECLE ENTER PARA CONTINUARMOS\n");
+                    ApresentarMensagem("OPÇÃO INVÁLIDA!! DIGITE UM NÚMERO DE 0 A 4!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
                     Console.ReadLine();
                 }
                 Console.WriteLine("\n-----------------------------------------------------------------------------------------------\n");
@@ -353,7 +344,24 @@ namespace GestaodeEquipamentosJP.ConsoleApp
 
         static void ExecutaAhOpcaoEscolhidaNoMenuGerenciarSolicitantes(int opcaoEscolhida)
         {
-
+            switch (opcaoEscolhida)
+            {
+                case 0:
+                    ApresentaTelaInicial();
+                    break;
+                case 1:
+                    RegistrarUmSolicitante();
+                    break;
+                case 2:
+                    EditarUmSolicitante();
+                    break;
+                case 3:
+                    ExcluirUmSolicitante();
+                    break;
+                case 4:
+                    VisualizarTodosOsSolicitantes();
+                    break;
+            }
         }
 
         static void SairDoSistema()
@@ -463,7 +471,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                             idValido = true;
                             Console.WriteLine("\n\nESTE É O EQUIPAMENTO A SER EXCLUÍDO:\n\n");
                             VisualizarUmEquipamento(idDoEquipamento);
-                            if (temChamado[idDoEquipamento] == false)
+                            if (equipamentoTemChamado[idDoEquipamento] == false)
                             {
                                 Console.Write("\n\nCONFIRMA A EXCLUSÃO? (S/N): ");
                                 string confirmacao = Console.ReadLine();
@@ -474,7 +482,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                                     numerosDeSerieDosEquipamentos = DeletarUmElementoDeUmArrayDeInteiros(numerosDeSerieDosEquipamentos, idDoEquipamento);
                                     datasDeFabricacaoDosEquipamentos = DeletarUmElementoDeUmArrayDeDateTime(datasDeFabricacaoDosEquipamentos, idDoEquipamento);
                                     fabricantesDosEquipamentos = DeletarUmElementoDeUmArrayDeStrings(fabricantesDosEquipamentos, idDoEquipamento);
-                                    temChamado = DeletarUmElementoDeUmArrayDeBooleanos(temChamado, idDoEquipamento);
+                                    equipamentoTemChamado = DeletarUmElementoDeUmArrayDeBooleanos(equipamentoTemChamado, idDoEquipamento);
                                     idsDosEquipamentos = DeletarUmElementoDeUmArrayDeInteiros(idsDosEquipamentos, idDoEquipamento);
                                     ApresentarMensagem("O EQUIPAMENTO FOI EXCLUÍDO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
                                     Console.ReadLine();
@@ -520,7 +528,21 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             }
             return posicaoAhRetornar;
         }
-        
+
+        static int RetornaAhPosicaoLivreDoArrayDeEquipamentos()
+        {
+            int posicaoLivre = -1;
+            for (int i = 0; i < nomesDosEquipamentos.Length; i++)
+            {
+                if (nomesDosEquipamentos[i] == null)
+                {
+                    posicaoLivre = i;
+                    break;
+                }
+            }
+            return posicaoLivre;
+        }
+
         static void VisualizarUmEquipamento(int posicao)
         {
             Console.WriteLine("\nId do equipamento: {0}", idsDosEquipamentos[posicao]);
@@ -529,7 +551,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             Console.WriteLine("\nNúmero de série do equipamento: {0}", numerosDeSerieDosEquipamentos[posicao]);
             Console.WriteLine("\nData de fabricação do equipamento: {0}", TransformarDateTimeEmString(datasDeFabricacaoDosEquipamentos[posicao]));
             Console.WriteLine("\nFabricante do equipamento: {0}", fabricantesDosEquipamentos[posicao]);
-            Console.WriteLine("\nO equipamento tem chamado? {0}", temChamado[posicao]);
+            Console.WriteLine("\nO equipamento tem chamado? {0}", equipamentoTemChamado[posicao]);
             Console.WriteLine();
             Console.WriteLine("-----------------------------------------------------------------------------------------------\n");
         }
@@ -645,7 +667,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             fabricantesDosEquipamentos[posicao] = fabricante;
             if (formaDeUso == "registrar")
             {
-                temChamado[posicao] = false;
+                equipamentoTemChamado[posicao] = false;
                 //Registrando o id sendo a posicao + 1
                 idsDosEquipamentos[posicao] = posicao + 1;
             }
@@ -714,7 +736,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                                 descricaoDosChamados = DeletarUmElementoDeUmArrayDeStrings(descricaoDosChamados, idDoChamado);
                                 idsDosChamados = DeletarUmElementoDeUmArrayDeInteiros(idsDosChamados, idDoChamado);
                                 datasDeAberturaDosChamados = DeletarUmElementoDeUmArrayDeDateTime(datasDeAberturaDosChamados, idDoChamado);
-                                temChamado[RetornaAhPosicaoDoEquipamentoPeloId(idsDosEquipamentosDentroDosChamados[idDoChamado])] = false;
+                                equipamentoTemChamado[RetornaAhPosicaoDoEquipamentoPeloId(idsDosEquipamentosDentroDosChamados[idDoChamado])] = false;
                                 idsDosEquipamentosDentroDosChamados = DeletarUmElementoDeUmArrayDeInteiros(idsDosEquipamentosDentroDosChamados, idDoChamado);
                                 ApresentarMensagem("O CHAMADO FOI EXCLUÍDO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
                                 Console.ReadLine();
@@ -802,22 +824,30 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             Console.WriteLine("\n\t\tREGISTRO DE CHAMADOS\n");
             if (RetornaAhPosicaoLivreDoArrayDeEquipamentos() != 0)
             {
-                int posicaoParaRegistrar = RetornaAhPosicaoLivreDoArrayDeChamados();
-                bool registrou = PedeOsDadosDoChamadoEhColocaEmUmaPosicao(posicaoParaRegistrar, "registrar");
-                if (registrou == true)
+                if (RetornaAhPosicaoLivreDoArrayDeSolicitantes() != 0)
                 {
-                    ApresentarMensagem("CHAMADO REGISTRADO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
-                    Console.ReadLine();
+                    int posicaoParaRegistrar = RetornaAhPosicaoLivreDoArrayDeChamados();
+                    bool registrou = PedeOsDadosDoChamadoEhColocaEmUmaPosicao(posicaoParaRegistrar, "registrar");
+                    if (registrou == true)
+                    {
+                        ApresentarMensagem("CHAMADO REGISTRADO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
+                        Console.ReadLine();
+                    }
+                    else
+                    {
+                        ApresentarMensagem("FALHA NO REGISTRO DO CHAMADO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                        Console.ReadLine();
+                    }
                 }
                 else
                 {
-                    ApresentarMensagem("FALHA NO REGISTRO DO CHAMADO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                    ApresentarMensagem("O SISTEMA AINDA NÃO POSSUI SOLICITANTES, PORTANTO NÃO PODEMOS REGISTRAR CHAMADOS!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
                     Console.ReadLine();
                 }
             }
             else
             {
-                ApresentarMensagem("O SISTEMA AINDA NÃO POSSUI EQUIPAMENTOS, POSTANTO NÃO PODEMOS REGISTRAR CHAMADOS!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                ApresentarMensagem("O SISTEMA AINDA NÃO POSSUI EQUIPAMENTOS, PORTANTO NÃO PODEMOS REGISTRAR CHAMADOS!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
                 Console.ReadLine();
             }
         }
@@ -838,10 +868,10 @@ namespace GestaodeEquipamentosJP.ConsoleApp
 
         static bool PedeOsDadosDoChamadoEhColocaEmUmaPosicao(int posicao, string formaDeUso)
         {
-            bool tituloValido = false, descricaoValida = false, dataAberturaValida = false, idDoEquipamentoValido = false, retorno = false;
-            string tituloChamado = "", descricaoChamado = "", dataAbertura = "", idEquipamentoInput = "";
+            bool tituloValido = false, descricaoValida = false, dataAberturaValida = false, idDoEquipamentoValido = false, idDoSolicitanteValido = false, retorno = false;
+            string tituloChamado = "", descricaoChamado = "", dataAbertura = "", idEquipamentoInput = "", idSolicitanteInput = "";
             DateTime dataAberturaDT = new DateTime(01, 01, 01);
-            int posicaoDoEquipamentoNoArrayDeEquipamentos = -1, idDoEquipamentoDoUsuario = -1;
+            int posicaoDoEquipamentoNoArrayDeEquipamentos = -1, posicaoDoSolicitanteNoArrayDeSolicitantes = -1, idDoEquipamentoDoUsuario = -1, idDoSolicitanteDoUsuario;
             do
             {
                 Console.Write("\nInforme o título do chamado: ");
@@ -881,8 +911,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                 }
                 else
                 {
-                    ApresentarMensagem("DATA INVÁLIDA!! INFORME UMA DATA NO SEGUINTE FORMATO (DD/MM/AAAA)\n" +
-                        "\n\nTECLE ENTER PARA CONTINUARMOS!!", ConsoleColor.Red);
+                    ApresentarMensagem("DATA INVÁLIDA!! INFORME UMA DATA NO SEGUINTE FORMATO (DD/MM/AAAA)!!\n\nTECLE ENTER PARA CONTINUARMOS!!", ConsoleColor.Red);
                     Console.ReadLine();
                 }
             } while (dataAberturaValida == false);
@@ -904,7 +933,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                             string confirmacao = Console.ReadLine();
                             if (confirmacao == "S" || confirmacao == "s")
                             {
-                                temChamado[posicaoDoEquipamentoNoArrayDeEquipamentos] = true;
+                                equipamentoTemChamado[posicaoDoEquipamentoNoArrayDeEquipamentos] = true;
                                 ApresentarMensagem("EQUIPAMENTO INCLUSO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
                                 Console.ReadLine();
                             }
@@ -921,6 +950,40 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                         Console.ReadLine();
                     }
                 } while (idDoEquipamentoValido == false);
+                //Inserindo o solicitante no chamado
+                do
+                {
+                    Console.Write("\nInforme o id do solicitante a ser incluso no chamado: ");
+                    idSolicitanteInput = Console.ReadLine();
+                    if (int.TryParse(idSolicitanteInput, out idDoSolicitanteDoUsuario) == true)
+                    {
+                        posicaoDoSolicitanteNoArrayDeSolicitantes = RetornaAhPosicaoDoSolicitantePeloId(idDoSolicitanteDoUsuario);
+                        idDoSolicitanteValido = true;
+                        if (posicaoDoSolicitanteNoArrayDeSolicitantes != -1)
+                        {
+                            Console.WriteLine("\n\nESTE É O SOLICITANTE A SER INCLUSO NO CHAMADO:\n\n");
+                            VisualizarUmSolicitante(posicaoDoSolicitanteNoArrayDeSolicitantes);
+                            Console.Write("\n\nCONFIRMA A INCLUSAO? (S/N) ");
+                            string confirmacao = Console.ReadLine();
+                            if (confirmacao == "S" || confirmacao == "s")
+                            {
+                                solicitanteTemChamado[posicaoDoSolicitanteNoArrayDeSolicitantes] = true;
+                                ApresentarMensagem("SOLICITANTE INCLUSO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
+                                Console.ReadLine();
+                            }
+                        }
+                        else
+                        {
+                            ApresentarMensagem("ID DO SOLICITANTE NÃO ENCONTRADO NO SISTEMA!!\n\nTECLE ENTER PARA CONTINUARMOS!!", ConsoleColor.Red);
+                            Console.ReadLine();
+                        }
+                    }
+                    else
+                    {
+                        ApresentarMensagem("ENTRADA INVÁLIDA!!\n\nTECLE ENTER PARA CONTINUARMOS!!", ConsoleColor.Red);
+                        Console.ReadLine();
+                    }
+                } while (idDoSolicitanteValido == false);
             }
             //int posicaoParaRegistrar = RetornaAhPosicaoLivreDoArrayDeEquipamentos();
             titulosDosChamados[posicao] = tituloChamado;
@@ -973,12 +1036,277 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             VisualizarUmEquipamento(RetornaAhPosicaoDoEquipamentoPeloId(idsDosEquipamentosDentroDosChamados[posicao]));
             Console.WriteLine();
         }
+
         static int RetornaAhQuantidadeDeDiasDaAberturaDeUmChamado(DateTime dataDeAberturaDoChamado)
         {
             DateTime hoje = DateTime.Today;
             TimeSpan dataCalculada = Convert.ToDateTime(hoje) - Convert.ToDateTime(dataDeAberturaDoChamado);
             int dias = dataCalculada.Days;
             return dias;
+        }
+
+        #endregion
+
+        #region Métodos dos solicitantes
+
+        static void ExcluirUmSolicitante()
+        {
+            int posicaoLivre = RetornaAhPosicaoLivreDoArrayDeSolicitantes();
+            if (posicaoLivre != 0)
+            {
+                bool idValido = false;
+                int idDoSolicitante = -1;
+                Console.Clear();
+                Console.ResetColor();
+                Console.WriteLine("\n\t\tEXCLUIR UM SOLICITANTE NO SISTEMA\n");
+                do
+                {
+                    Console.Write("Informe o Id do solicitante que deseja excluir: ");
+                    string idInputado = Console.ReadLine();
+                    if (int.TryParse(idInputado, out int idDoUsuario) == true)
+                    {
+                        if (RetornaAhPosicaoDoSolicitantePeloId(idDoUsuario) != -1)
+                        {
+                            idDoSolicitante = RetornaAhPosicaoDoSolicitantePeloId(idDoUsuario);
+                            idValido = true;
+                            Console.WriteLine("\n\nESTE É O SOLICITANTE A SER EXCLUÍDO:\n\n");
+                            VisualizarUmSolicitante(idDoSolicitante);
+                            Console.Write("\n\nCONFIRMA A EXCLUSÃO? (S/N): ");
+                            string confirmacao = Console.ReadLine();
+                            if (confirmacao == "S" || confirmacao == "s")
+                            {
+                                nomesDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(nomesDosSolicitantes, idDoSolicitante);
+                                emailDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(emailDosSolicitantes, idDoSolicitante);
+                                telefoneDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(telefoneDosSolicitantes, idDoSolicitante);
+                                idsDosSolicitantes = DeletarUmElementoDeUmArrayDeInteiros(idsDosSolicitantes, idDoSolicitante);
+                                solicitanteTemChamado = DeletarUmElementoDeUmArrayDeBooleanos(solicitanteTemChamado, idDoSolicitante);
+                                ApresentarMensagem("O SOLICITANTE FOI EXCLUÍDO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
+                                Console.ReadLine();
+                            }
+                        }
+                        else
+                        {
+                            ApresentarMensagem("O ID INFORMADO NÃO FOI ENCONTRADO NO SISTEMA!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                            Console.ReadLine();
+                        }
+                    }
+                    else
+                    {
+                        ApresentarMensagem("ENTRADA INVÁLIDA!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                        Console.ReadLine();
+                    }
+                } while (idValido == false);
+            }
+            else
+            {
+                ApresentarMensagem("O SISTEMA NÃO POSSUI SOLICITANTES!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                Console.ReadLine();
+            }
+        }
+
+        static void EditarUmSolicitante()
+        {
+            int posicaoLivre = RetornaAhPosicaoLivreDoArrayDeSolicitantes();
+            if (posicaoLivre != 0)
+            {
+                bool idValido = false;
+                int idDoSolicitante = -1;
+                Console.Clear();
+                Console.ResetColor();
+                Console.WriteLine("\n\t\tEDIÇÃO DE SOLICITANTES\n\n");
+                do
+                {
+                    Console.Write("Informe o Id do solicitante que deseja editar: ");
+                    string idInputado = Console.ReadLine();
+                    if (int.TryParse(idInputado, out int idDoUsuario) == true)
+                    {
+                        if (RetornaAhPosicaoDoSolicitantePeloId(idDoUsuario) != -1)
+                        {
+                            idDoSolicitante = RetornaAhPosicaoDoSolicitantePeloId(idDoUsuario);
+                            idValido = true;
+                            Console.WriteLine("\n\nESTE É O SOLICITANTE A SER EDITADO:\n\n");
+                            VisualizarUmSolicitante(idDoSolicitante);
+                            Console.Write("\n\nCONFIRMA A EDIÇÃO? (S/N) ");
+                            string confirmacao = Console.ReadLine();
+                            if (confirmacao == "S" || confirmacao == "s")
+                            {
+                                bool editou = PedeOsDadosDoSolicitanteEhColocaEmUmaPosicao(idDoSolicitante, "editar");
+                                if (editou == true)
+                                {
+                                    ApresentarMensagem("SOLICITANTE EDITADO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
+                                    Console.ReadLine();
+                                }
+                                else
+                                {
+                                    ApresentarMensagem("FALHA NA EDIÇÃO DO SOLICITANTE!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                                    Console.ReadLine();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ApresentarMensagem("O ID INFORMADO NÃO FOI ENCONTRADO NO SISTEMA!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                            Console.ReadLine();
+                        }
+                    }
+                    else
+                    {
+                        ApresentarMensagem("ENTRADA INVÁLIDA!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                        Console.ReadLine();
+                    }
+                } while (idValido == false);
+            }
+            else
+            {
+                ApresentarMensagem("O SISTEMA NÃO POSSUI SOLICITANTES!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                Console.ReadLine();
+            }
+        }
+
+        static void RegistrarUmSolicitante()
+        {
+            Console.Clear();
+            Console.ResetColor();
+            Console.WriteLine("\n\t\tREGISTRO DE SOLICITANTES\n");
+            int posicaoParaRegistrar = RetornaAhPosicaoLivreDoArrayDeSolicitantes();
+            bool registrou = PedeOsDadosDoSolicitanteEhColocaEmUmaPosicao(posicaoParaRegistrar, "registrar");
+            if (registrou == true)
+            {
+                ApresentarMensagem("SOLICITANTE REGISTRADO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
+                Console.ReadLine();
+            }
+            else
+            {
+                ApresentarMensagem("FALHA NO REGISTRO DO SOLICITANTE!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                Console.ReadLine();
+            }
+        }
+
+        static int RetornaAhPosicaoDoSolicitantePeloId(int id)
+        {
+            int posicaoAhRetornar = -1;
+            int posicaoLivre = RetornaAhPosicaoLivreDoArrayDeSolicitantes();
+            for (int i = 0; i < posicaoLivre; i++)
+            {
+                if (idsDosSolicitantes[i] == id)
+                {
+                    posicaoAhRetornar = i;
+                    break;
+                }
+            }
+            return posicaoAhRetornar;
+        }
+
+        static int RetornaAhPosicaoLivreDoArrayDeSolicitantes()
+        {
+            int posicaoLivre = -1;
+            for (int i = 0; i < nomesDosSolicitantes.Length; i++)
+            {
+                if (nomesDosSolicitantes[i] == null)
+                {
+                    posicaoLivre = i;
+                    break;
+                }
+            }
+            return posicaoLivre;
+        }
+
+        static bool PedeOsDadosDoSolicitanteEhColocaEmUmaPosicao(int posicao, string formaDeUso)
+        {
+            bool nomeValido = false, emailValido = false, telefoneValido = false;
+            string nomeSolicitante = "", emailSolicitante = "", telefoneSolicitante = "";
+            do
+            {
+                Console.Write("\nInforme o nome do solicitante com no mínimo 6 (seis) caracteres: ");
+                nomeSolicitante = Console.ReadLine();
+                if (nomeSolicitante.Length >= 6)
+                {
+                    nomeValido = true;
+                }
+                else
+                {
+                    ApresentarMensagem("O NOME DO SOLICITANTE DEVE TER PELO MENOS 6 CARACTERES!!\n\nTECLE ENTER PARA CONTINUARMOS!!", ConsoleColor.Red);
+                    Console.ReadLine();
+                }
+            } while (nomeValido == false);
+            do
+            {
+                Console.Write("\nInforme o email do solicitante: ");
+                emailSolicitante = Console.ReadLine();
+                if (emailSolicitante.Length > 0 && emailSolicitante.Contains("@") && emailSolicitante.Contains("."))
+                {
+                    emailValido = true;
+                }
+                else
+                {
+                    ApresentarMensagem("EMAIL INVÁLIDO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                    Console.ReadLine();
+                }
+            } while (emailValido == false);
+            do
+            {
+                Console.Write("\nInforme o telefone do solicitante: ");
+                telefoneSolicitante = Console.ReadLine();
+                if (telefoneSolicitante.Length > 0)
+                {
+                    telefoneValido = true;
+                }
+                else
+                {
+                    ApresentarMensagem("NÚMERO DE TELEFONE INVÁLIDO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                    Console.ReadLine();
+                }
+            } while (telefoneValido == false);
+            //int posicaoParaRegistrar = RetornaAhPosicaoLivreDoArrayDeEquipamentos();
+            nomesDosSolicitantes[posicao] = nomeSolicitante;
+            emailDosSolicitantes[posicao] = emailSolicitante;
+            telefoneDosSolicitantes[posicao] = telefoneSolicitante;
+            if (formaDeUso == "registrar")
+            {
+                solicitanteTemChamado[posicao] = false;
+                //Registrando o id sendo a posicao + 1
+                idsDosSolicitantes[posicao] = posicao + 1;
+            }
+            if (nomeValido == emailValido && emailValido == telefoneValido && telefoneValido == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static void VisualizarTodosOsSolicitantes()
+        {
+            Console.Clear();
+            Console.ResetColor();
+            Console.WriteLine("\n\t\tVISUALIZAR TODOS OS SOLICITANTES REGISTRADOS NO SISTEMA");
+            int posicaoLivre = RetornaAhPosicaoLivreDoArrayDeSolicitantes();
+            if (posicaoLivre != 0)
+            {
+                for (int i = 0; i < posicaoLivre; i++)
+                {
+                    VisualizarUmSolicitante(i);
+                }
+            }
+            else
+            {
+                ApresentarMensagem("O SISTEMA NÃO POSSUI SOLCITANTES REGISTRADOS!!", ConsoleColor.Red);
+            }
+            Console.WriteLine("\n\nTECLE ENTER PARA CONTINUARMOS");
+            Console.ReadLine();
+        }
+
+        static void VisualizarUmSolicitante(int posicao)
+        {
+            Console.WriteLine("\nId do solicitante: {0}", idsDosSolicitantes[posicao]);
+            Console.WriteLine("\nNome do solicitante: {0}", nomesDosSolicitantes[posicao]);
+            Console.WriteLine("\nEmail do solicitante: {0}", emailDosSolicitantes[posicao]);
+            Console.WriteLine("\nTelefone do solicitante: {0}", telefoneDosSolicitantes[posicao]);
+            Console.WriteLine("\nExiste algum chamado para este sokictante: {0}", solicitanteTemChamado[posicao]);
+            Console.WriteLine();
+            Console.WriteLine("-----------------------------------------------------------------------------------------------\n");
         }
 
         #endregion
