@@ -670,7 +670,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             do
             {
                 Console.Write("\nInforme o preço de aquisição do equipamento: ");
-                if (decimal.TryParse(Console.ReadLine(), out precoDeAquisicao) && precoDeAquisicao >= 0)
+                if (decimal.TryParse(Console.ReadLine(), out precoDeAquisicao) && precoDeAquisicao > 0)
                 {
                     precoValido = true;
                 }
