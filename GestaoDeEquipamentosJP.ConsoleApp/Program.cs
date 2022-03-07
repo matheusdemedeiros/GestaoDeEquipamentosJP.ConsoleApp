@@ -14,6 +14,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
         static DateTime[] datasDeFabricacaoDosEquipamentos = new DateTime[1000];
         static string[] fabricantesDosEquipamentos = new string[1000];
         static bool[] equipamentoTemChamado = new bool[1000];
+        static int[] quantidadeDeOcorrenciasDeUmEquipamentoEmChamados = new int[1000];
         //Variáveis relacionadas aos chamados
         static int[] idsDosChamados = new int[1000];
         static string[] titulosDosChamados = new string[1000];
@@ -30,7 +31,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
         static string[] emailDosSolicitantes = new string[1000];
         static string[] telefoneDosSolicitantes = new string[1000];
         static bool[] solicitanteTemChamado = new bool[1000];
-
+        static int[] quantidadeDeOcorrenciasDeUmSolicitanteEmChamados = new int[1000];
         //Variáveis de fluxo do programa
         static bool programaContinuaExecutando = true;
 
@@ -93,6 +94,21 @@ namespace GestaodeEquipamentosJP.ConsoleApp
         static int[] DeletarUmElementoDeUmArrayDeInteiros(int[] arrayAhSerReduzido, int posicaoDeRemocao)
         {
             int[] arrayTemporario = new int[arrayAhSerReduzido.Length];
+            int j = 0;
+            for (int i = 0; i < arrayAhSerReduzido.Length; i++)
+            {
+                if (i != posicaoDeRemocao)
+                {
+                    arrayTemporario[j] = arrayAhSerReduzido[i];
+                    j++;
+                }
+            }
+            return arrayTemporario;
+        }
+        
+        static int[] DeletarUmElementoDeUmArrayDeInteirosEhDiminuirOhtamanho(int[] arrayAhSerReduzido, int posicaoDeRemocao)
+        {
+            int[] arrayTemporario = new int[arrayAhSerReduzido.Length-1];
             int j = 0;
             for (int i = 0; i < arrayAhSerReduzido.Length; i++)
             {
@@ -254,16 +270,16 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             {
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("-----------------------------------------------------------------------------------------------\n");
-                Console.WriteLine("\t\tMENU GERENCIAR EQUIPAMENTOS");
+                Console.WriteLine("\n\n\t\tMENU GERENCIAR EQUIPAMENTOS");
                 Console.WriteLine("\n * Digite 1 para Registrar um novo equipamento;");
                 Console.WriteLine("\n * Digite 2 para Editar um equipamento;");
                 Console.WriteLine("\n * Digite 3 para Excluir um equipamento; ");
                 Console.WriteLine("\n * Digite 4 para Vizualizar todos os equipamentos cadastrados; ");
+                Console.WriteLine("\n * Digite 5 para Vizualizar os equipamentos mais problemáticos em ordem decrescente; ");
                 Console.WriteLine("\n * Digite 0 para Retornar ao Menu principal;");
                 Console.Write("\n * Sua escolha: ");
                 string escolha = Console.ReadLine();
-                if (int.TryParse(escolha, out int opcao) && opcao >= 0 && opcao <= 4)
+                if (int.TryParse(escolha, out int opcao) && opcao >= 0 && opcao <= 5)
                 {
                     opcaoValida = true;
                     ExecutaAhOpcaoEscolhidaNoMenuGerenciarEquipamentos(opcao);
@@ -300,6 +316,9 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                     break;
                 case 4:
                     VisualizarTodosOsEquipamentos();
+                    break;
+                case 5:
+                    VisualizarEquipamentosOrdenadosEmOcorrenciaDeChamados();
                     break;
             }
         }
@@ -600,6 +619,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             Console.WriteLine("\nData de fabricação do equipamento: {0}", TransformarDateTimeEmString(datasDeFabricacaoDosEquipamentos[posicao]));
             Console.WriteLine("\nFabricante do equipamento: {0}", fabricantesDosEquipamentos[posicao]);
             Console.WriteLine("\nO equipamento tem chamado? {0}", equipamentoTemChamado[posicao]);
+            Console.WriteLine("\nQuantidade de chamados com este equipamento {0}:", quantidadeDeOcorrenciasDeUmEquipamentoEmChamados[posicao]);
         }
 
         static void VisualizarTodosOsEquipamentos()
@@ -728,6 +748,76 @@ namespace GestaodeEquipamentosJP.ConsoleApp
             }
         }
 
+        //Refazer
+        static void VisualizarEquipamentosOrdenadosEmOcorrenciaDeChamados()
+        {
+            Console.Clear();
+            int posicaoLivre = RetornaAhPosicaoLivreDoArrayDeEquipamentos(), posicaoDaMaiorQuantidadeDeOcorrencias = 0, cont = 0, ultimaPosicaoOcupadaAtual = 0;
+            if (posicaoLivre != 0)
+            {
+                if (RetornaAhPosicaoLivreDoArrayDeChamados() != -1)
+                {
+
+                    int[] novoArrayIntermediario = new int[posicaoLivre];
+                    Array.Copy(quantidadeDeOcorrenciasDeUmEquipamentoEmChamados, novoArrayIntermediario, posicaoLivre);
+                    int[] novoArrayFinal = new int[posicaoLivre];
+                    ultimaPosicaoOcupadaAtual = novoArrayIntermediario.Length - 1;
+                    Console.WriteLine("\n\n\t\tVISUALIZAR OS EQUIPAMENTOS POR ORDEM DE OCORRÊNCIAS EM CHAMADOS\n");
+                    for (int i = 0; i < novoArrayFinal.Length; i++)
+                    {
+                        novoArrayFinal[i] = -1;
+                    }
+                    int j = 0;
+                    while (novoArrayIntermediario.Length >= cont)
+                    {
+                        posicaoDaMaiorQuantidadeDeOcorrencias = 0;
+                        for (int i = 0; i < novoArrayIntermediario.Length; i++)
+                        {
+                            if (novoArrayIntermediario[i] > novoArrayIntermediario[j])
+                            {
+                                bool jaContem = false;
+                                for(int a = 0;a < novoArrayFinal.Length; a++)
+                                {
+                                    if(novoArrayFinal[a] == novoArrayIntermediario[i])
+                                    {
+                                        jaContem = true;
+                                    }
+                                }
+                                if (jaContem == false)
+                                {
+                                    posicaoDaMaiorQuantidadeDeOcorrencias = i;
+                                }
+                            }
+                            else
+                            {
+                                posicaoDaMaiorQuantidadeDeOcorrencias = j;
+                            }
+                        }
+                        j++;
+                        novoArrayFinal[cont] = posicaoDaMaiorQuantidadeDeOcorrencias;
+                        cont++;
+                    }
+                    for (int i = 0; i < novoArrayFinal.Length; i++)
+                    {
+                        //if ternário escolhendo uma cor se for par e uma cor se for ímpar
+                        Console.ForegroundColor = (i % 2 == 0) ? ConsoleColor.DarkCyan : ConsoleColor.DarkYellow;
+                        VisualizarUmEquipamento(novoArrayFinal[i]);
+                    }
+                    Console.ResetColor();
+                }
+                else
+                {
+                    ApresentarMensagem("O SITEMA AINDA NÃO POSSUI CHAMADOS REGISTRADOS!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Red);
+                    Console.ReadLine();
+                }
+            }
+            else
+            {
+                ApresentarMensagem("O SISTEMA AINDA NÃO POSSUI EQUIPAMENTOS REGISTRADOS!!", ConsoleColor.Red);
+            }
+            Console.WriteLine("\n\nTECLE ENTER PARA CONTINUARMOS\n");
+            Console.ReadLine();
+        }
         #endregion
 
         #region Métodos dos chamados
@@ -870,7 +960,7 @@ namespace GestaodeEquipamentosJP.ConsoleApp
 
             Console.Clear();
             Console.ResetColor();
-            Console.WriteLine("\n\n\n\t\tVISUALIZAR TODOS OS CHAMADOS ABERTPS\n");
+            Console.WriteLine("\n\n\n\t\tVISUALIZAR TODOS OS CHAMADOS ABERTOS\n");
             int posicaoLivre = RetornaAhPosicaoLivreDoArrayDeChamados(), quantidadeDeChamadosAbertos = 0, corAtual = 0;
             if (posicaoLivre != 0)
             {
@@ -936,7 +1026,16 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                                     descricaoDosChamados = DeletarUmElementoDeUmArrayDeStrings(descricaoDosChamados, idDoChamado);
                                     idsDosChamados = DeletarUmElementoDeUmArrayDeInteiros(idsDosChamados, idDoChamado);
                                     datasDeAberturaDosChamados = DeletarUmElementoDeUmArrayDeDateTime(datasDeAberturaDosChamados, idDoChamado);
-                                    equipamentoTemChamado[RetornaAhPosicaoDoEquipamentoPeloId(idsDosEquipamentosDentroDosChamados[idDoChamado])] = false;
+                                    quantidadeDeOcorrenciasDeUmSolicitanteEmChamados[RetornaAhPosicaoDoSolicitantePeloId(idsDosSolicitantesDentroDosChamados[idDoChamado])] -= 1;
+                                    quantidadeDeOcorrenciasDeUmEquipamentoEmChamados[RetornaAhPosicaoDoEquipamentoPeloId(idsDosEquipamentosDentroDosChamados[idDoChamado])] -= 1;
+                                    if (quantidadeDeOcorrenciasDeUmEquipamentoEmChamados[RetornaAhPosicaoDoEquipamentoPeloId(idsDosEquipamentosDentroDosChamados[idDoChamado])] == 0)
+                                    {
+                                        equipamentoTemChamado[RetornaAhPosicaoDoEquipamentoPeloId(idsDosEquipamentosDentroDosChamados[idDoChamado])] = false;
+                                    }
+                                    if (quantidadeDeOcorrenciasDeUmSolicitanteEmChamados[RetornaAhPosicaoDoSolicitantePeloId(idsDosSolicitantesDentroDosChamados[idDoChamado])] == 0)
+                                    {
+                                        solicitanteTemChamado[RetornaAhPosicaoDoSolicitantePeloId(idsDosSolicitantesDentroDosChamados[idDoChamado])] = false;
+                                    }
                                     idsDosEquipamentosDentroDosChamados = DeletarUmElementoDeUmArrayDeInteiros(idsDosEquipamentosDentroDosChamados, idDoChamado);
                                     idsDosSolicitantesDentroDosChamados = DeletarUmElementoDeUmArrayDeInteiros(idsDosSolicitantesDentroDosChamados, idDoChamado);
                                     confirmacaoInputExclusaoValida = true;
@@ -1086,6 +1185,16 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                                         {
                                             if (RetornaAhPosicaoDoSolicitantePeloId(novoIdDoUsuario) != -1)
                                             {
+                                                int idSolicitanteAntigo = idsDosSolicitantesDentroDosChamados[idDoChamado];
+                                                quantidadeDeOcorrenciasDeUmSolicitanteEmChamados[RetornaAhPosicaoDoEquipamentoPeloId(idSolicitanteAntigo)] -= 1;
+                                                if (quantidadeDeOcorrenciasDeUmSolicitanteEmChamados[RetornaAhPosicaoDoEquipamentoPeloId(idSolicitanteAntigo)] == 0)
+                                                {
+                                                    solicitanteTemChamado[RetornaAhPosicaoDoEquipamentoPeloId(idSolicitanteAntigo)] = false;
+                                                }
+                                                else
+                                                {
+                                                    solicitanteTemChamado[RetornaAhPosicaoDoEquipamentoPeloId(idSolicitanteAntigo)] = true;
+                                                }
                                                 idsDosSolicitantesDentroDosChamados[idDoChamado] = novoIdDoUsuario;
                                                 idDoNovoSolicitanteValido = true;
                                                 ApresentarMensagem("O CHAMADO TEVE O SOLICITANTE ALTERADO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
@@ -1246,16 +1355,17 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                         posicaoDoEquipamentoNoArrayDeEquipamentos = RetornaAhPosicaoDoEquipamentoPeloId(idDoEquipamentoDoUsuario);
                         if (posicaoDoEquipamentoNoArrayDeEquipamentos != -1)
                         {
-                            Console.WriteLine("\n\nESTE É O EQUIPAMENTO A SER INCLUSO NO CHAMADO:\n\n");
+                            Console.WriteLine("\nESTE É O EQUIPAMENTO A SER INCLUSO NO CHAMADO:\n");
                             VisualizarUmEquipamento(posicaoDoEquipamentoNoArrayDeEquipamentos);
                             bool confirmacaoInputEquipamentoValido = false;
                             do
                             {
-                                Console.Write("\n\nCONFIRMA A INCLUSAO? (S/N) ");
+                                Console.Write("\nCONFIRMA A INCLUSAO? (S/N) ");
                                 string confirmacaoEquipamento = Console.ReadLine();
                                 if (confirmacaoEquipamento == "S" || confirmacaoEquipamento == "s")
                                 {
                                     equipamentoTemChamado[posicaoDoEquipamentoNoArrayDeEquipamentos] = true;
+                                    quantidadeDeOcorrenciasDeUmEquipamentoEmChamados[posicaoDoEquipamentoNoArrayDeEquipamentos] += 1;
                                     idDoEquipamentoValido = true;
                                     confirmacaoInputEquipamentoValido = true;
                                     ApresentarMensagem("EQUIPAMENTO INCLUSO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
@@ -1298,18 +1408,19 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                         posicaoDoSolicitanteNoArrayDeSolicitantes = RetornaAhPosicaoDoSolicitantePeloId(idDoSolicitanteDoUsuario);
                         if (posicaoDoSolicitanteNoArrayDeSolicitantes != -1)
                         {
-                            Console.WriteLine("\n\nESTE É O SOLICITANTE A SER INCLUSO NO CHAMADO:\n\n");
+                            Console.WriteLine("\nESTE É O SOLICITANTE A SER INCLUSO NO CHAMADO:\n");
                             VisualizarUmSolicitante(posicaoDoSolicitanteNoArrayDeSolicitantes);
                             bool confirmacaoInputSolicitanteValido = false;
                             do
                             {
-                                Console.Write("\n\nCONFIRMA A INCLUSAO? (S/N) ");
+                                Console.Write("\nCONFIRMA A INCLUSAO? (S/N) ");
                                 string confirmacaoSolicitante = Console.ReadLine();
                                 if (confirmacaoSolicitante == "S" || confirmacaoSolicitante == "s")
                                 {
                                     idDoSolicitanteValido = true;
                                     confirmacaoInputSolicitanteValido = true;
                                     solicitanteTemChamado[posicaoDoSolicitanteNoArrayDeSolicitantes] = true;
+                                    quantidadeDeOcorrenciasDeUmSolicitanteEmChamados[posicaoDoSolicitanteNoArrayDeSolicitantes] += 1;
                                     ApresentarMensagem("SOLICITANTE INCLUSO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
                                     Console.ReadLine();
                                 }
@@ -1449,11 +1560,13 @@ namespace GestaodeEquipamentosJP.ConsoleApp
                                         telefoneDosSolicitantes = DeletarUmElementoDeUmArrayDeStrings(telefoneDosSolicitantes, idDoSolicitante);
                                         idsDosSolicitantes = DeletarUmElementoDeUmArrayDeInteiros(idsDosSolicitantes, idDoSolicitante);
                                         solicitanteTemChamado = DeletarUmElementoDeUmArrayDeBooleanos(solicitanteTemChamado, idDoSolicitante);
+                                        confirmacaoInputExlusaoSolicitante = true;
                                         ApresentarMensagem("O SOLICITANTE FOI EXCLUÍDO COM SUCESSO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Green);
                                         Console.ReadLine();
                                     }
                                     else if (confirmacaoExclusao == "N" || confirmacaoExclusao == "n")
                                     {
+                                        confirmacaoInputExlusaoSolicitante = true;
                                         ApresentarMensagem("O SOLICITANTE NÃO FOI EXCLUÍDO!!\n\nTECLE ENTER PARA CONTINUARMOS", ConsoleColor.Yellow);
                                         Console.ReadLine();
                                     }
